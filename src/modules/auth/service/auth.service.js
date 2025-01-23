@@ -1,7 +1,8 @@
 import User from '../../../db/models/user.model.js';
 import bcrypt from 'bcrypt';
 import CryptoJS from 'crypto-js';
-import sendEmail from '../../mailer.js';
+import sendEmail from '../../../utils/mailer.js';
+import jwt from 'jsonwebtoken';
 
 export default class Auth {
   static async register(req, res) {
@@ -55,10 +56,13 @@ export default class Auth {
         phone: encryptPhone,
       });
 
+      let token = jwt.sign({ email }, process.env.JWT_VERIFY_SECRET);
+      console.log(token);
+
       await sendEmail(
         email,
-        'Hello from nodemailer',
-        'this mail is sent from node server'
+        name,
+        `${req.protocol}://${req.host}:8080${req.baseUrl}/verify/${token}`
       );
 
       const objUser = user.toObject();
@@ -108,6 +112,23 @@ export default class Auth {
       res
         .status(200)
         .json({ message: `${user.name} is logged in, Welcome`, user: objUser });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async verify(req, res) {
+    try {
+      const { token } = req.params;
+      const decoded = jwt.verify(token, process.env.JWT_VERIFY_SECRET);
+      const user = await User.findOne({ email: decoded.email });
+      if (!user) return res.status(404).json({ message: 'Email not found' });
+      await User.findByIdAndUpdate(
+        user._id,
+        { confirmEmail: true },
+        { new: true }
+      );
+      res.status(200).json({ message: 'you email is verified' });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }

@@ -7,7 +7,7 @@ const messageSchema = new Schema(
       required: [true, 'message is required'],
     },
     receiverId: {
-      type: Types.ObjectId(),
+      type: Types.ObjectId,
       required: true,
       ref: 'User',
     },
@@ -15,6 +15,6 @@ const messageSchema = new Schema(
   { timestamps: true }
 );
 
-const Message = model('Message', messageSchema);
+const messageModel = model('Message', messageSchema);
 
-export default Message;
+export default messageModel;

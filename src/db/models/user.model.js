@@ -29,6 +29,10 @@ const userSchema = new Schema(
       enum: ['male', 'female'],
       default: 'male',
     },
+    profileImage: {
+      type: String,
+      default: null,
+    },
     role: {
       type: String,
       enum: Object.values(roleType),

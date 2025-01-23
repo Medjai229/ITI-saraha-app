@@ -9,32 +9,6 @@ export default class Auth {
     try {
       const { name, email, phone, password, repeatPassword } = req.body;
 
-      if (!name) {
-        return res.status(400).json({ message: 'name is requried' });
-      }
-
-      if (!email) {
-        return res.status(400).json({ message: 'email is requried' });
-      }
-
-      if (!phone) {
-        return res.status(400).json({ message: 'phone number is requried' });
-      }
-
-      if (!password) {
-        return res.status(400).json({ message: 'password is requried' });
-      }
-
-      if (!repeatPassword) {
-        return res.status(400).json({ message: 'repeatPassword is requried' });
-      }
-
-      if (password !== repeatPassword) {
-        return res
-          .status(422)
-          .json({ message: "repeatPassword doesn't match password" });
-      }
-
       if (await userModel.findOne({ email })) {
         return res.status(409).json({ message: 'email already exists' });
       }
@@ -80,14 +54,6 @@ export default class Auth {
     try {
       const { email, password } = req.body;
 
-      if (!email) {
-        return res.status(400).json({ message: 'email is requried' });
-      }
-
-      if (!password) {
-        return res.status(400).json({ message: 'password is requried' });
-      }
-
       const user = await userModel.findOne({ email });
 
       if (!user) {
@@ -99,10 +65,6 @@ export default class Auth {
       if (!match) {
         return res.status(400).json({ message: 'invalid password' });
       }
-
-      const objUser = user.toObject();
-      objUser.phone = decryptPhone;
-      delete objUser.password;
 
       let token = jwt.sign(
         { id: user._id, isLoggedIn: true },

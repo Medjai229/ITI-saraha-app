@@ -9,6 +9,8 @@ export default class Auth {
     try {
       const { name, email, phone, password, repeatPassword } = req.body;
 
+      const profileImage = req.file ? req.file.filename : null;
+
       if (await userModel.findOne({ email })) {
         return res.status(409).json({ message: 'email already exists' });
       }
@@ -28,6 +30,7 @@ export default class Auth {
         email,
         password: hashedPassword,
         phone: encryptPhone,
+        profileImage,
       });
 
       let token = jwt.sign({ email }, process.env.JWT_VERIFY_SECRET);

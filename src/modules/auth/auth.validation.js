@@ -8,7 +8,7 @@ export const signUpValidationSchema = joi
       .email({ minDomainSegments: 2, tlds: ['com', 'net'] })
       .required(),
     password: joi.string().required(),
-    confirmPassword: joi.string().valid(joi.ref('password')).required(),
+    repeatPassword: joi.string().valid(joi.ref('password')).required(),
     phone: joi.string().required(),
     gender: joi.string(),
   })

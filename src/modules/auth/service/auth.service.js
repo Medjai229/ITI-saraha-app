@@ -100,11 +100,6 @@ export default class Auth {
         return res.status(400).json({ message: 'invalid password' });
       }
 
-      const decryptPhone = CryptoJS.AES.decrypt(
-        user.phone,
-        process.env.SECRET_WORD_CRYPTO
-      ).toString(CryptoJS.enc.Utf8);
-
       const objUser = user.toObject();
       objUser.phone = decryptPhone;
       delete objUser.password;

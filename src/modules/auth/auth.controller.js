@@ -5,10 +5,18 @@ import {
   signInValidationSchema,
   signUpValidationSchema,
 } from './auth.validation.js';
+import multer from 'multer';
+
+const upload = multer({ dest: 'uploads/' });
 
 const authRouter = Router();
 
-authRouter.post('/register', validation(signUpValidationSchema), Auth.register);
+authRouter.post(
+  '/register',
+  upload.single('profileImage'),
+  validation(signUpValidationSchema),
+  Auth.register
+);
 authRouter.post('/login', validation(signInValidationSchema), Auth.login);
 authRouter.get('/verify/:token', Auth.verify);
 

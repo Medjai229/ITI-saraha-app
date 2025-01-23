@@ -109,9 +109,14 @@ export default class Auth {
       objUser.phone = decryptPhone;
       delete objUser.password;
 
+      let token = jwt.sign(
+        { id: user._id, isLoggedIn: true },
+        process.env.JWT_LOGIN_TOKEN
+      );
+
       res
         .status(200)
-        .json({ message: `${user.name} is logged in, Welcome`, user: objUser });
+        .json({ message: `${user.name} is logged in, Welcome`, token });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }

@@ -1,4 +1,4 @@
-import User from '../../../db/models/user.model.js';
+import userModel from '../../../db/models/user.model.js';
 import bcrypt from 'bcrypt';
 import CryptoJS from 'crypto-js';
 import sendEmail from '../../../utils/mailer.js';
@@ -35,7 +35,7 @@ export default class Auth {
           .json({ message: "repeatPassword doesn't match password" });
       }
 
-      if (await User.findOne({ email })) {
+      if (await userModel.findOne({ email })) {
         return res.status(409).json({ message: 'email already exists' });
       }
 
@@ -49,7 +49,7 @@ export default class Auth {
         process.env.SECRET_WORD_CRYPTO
       );
 
-      const user = await User.create({
+      const user = await userModel.create({
         name,
         email,
         password: hashedPassword,
@@ -88,7 +88,7 @@ export default class Auth {
         return res.status(400).json({ message: 'password is requried' });
       }
 
-      const user = await User.findOne({ email });
+      const user = await userModel.findOne({ email });
 
       if (!user) {
         return res.status(404).json({ message: "email doesn't exist" });
@@ -121,9 +121,9 @@ export default class Auth {
     try {
       const { token } = req.params;
       const decoded = jwt.verify(token, process.env.JWT_VERIFY_SECRET);
-      const user = await User.findOne({ email: decoded.email });
+      const user = await userModel.findOne({ email: decoded.email });
       if (!user) return res.status(404).json({ message: 'Email not found' });
-      await User.findByIdAndUpdate(
+      await userModel.findByIdAndUpdate(
         user._id,
         { confirmEmail: true },
         { new: true }
